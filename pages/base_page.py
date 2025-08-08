@@ -1,7 +1,6 @@
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.action_chains import ActionChains
-import requests
 from faker import Faker
 fake = Faker()
 import allure
@@ -9,13 +8,14 @@ import allure
 import data
 from locators.main_page_locators import MainPageLocators
 from locators.order_page_locators import OrderPageLocators
+from locators.accout_page_locators import AccountPageLocators
 
 
 class BasePage:
 
     def __init__(self, driver):
         self.driver = driver
-        self.timeout = 35
+        self.timeout = 55
         self.wait = WebDriverWait(self.driver, self.timeout)
 
     @allure.step('переход по url')
@@ -38,13 +38,32 @@ class BasePage:
 
     @allure.step('клик по элемент локатора')
     def click_to_element_locator(self, locator):
-        WebDriverWait(self.driver, self.timeout).until(expected_conditions.element_to_be_clickable(locator))
-        self.driver.find_element(*locator).click()
+        if data.DRIVER_NAME == 'chrome':
+            WebDriverWait(self.driver, self.timeout).until(expected_conditions.element_to_be_clickable(locator))
+            self.driver.find_element(*locator).click()
+        else:
+            element = self.find_element_with_wait(locator)
+            ActionChains(self.driver).move_to_element(element).click().perform()
+
+    @allure.step('клик по локатору кнопки для Firefox')
+    def click_on_element_for_firefox(self, locator):
+        element = self.find_element_with_wait(locator)
+        ActionChains(self.driver).move_to_element(element).click().perform()
+
+
 
     @allure.step('клик по web-элементу')
     def click_to_element(self, element):
-        WebDriverWait(self.driver, self.timeout).until(expected_conditions.element_to_be_clickable(element))
-        element.click()
+        if data.DRIVER_NAME == 'chrome':
+            WebDriverWait(self.driver, self.timeout).until(expected_conditions.element_to_be_clickable(element))
+            element.click()
+        else:
+            ActionChains(self.driver).move_to_element(element).click().perform()
+
+
+    @allure.step('клик по web-элементу кнопки для Firefox')
+    def click_on_web_element_for_firefox(self, element):
+        ActionChains(self.driver).move_to_element(element).click().perform()
 
     @allure.step('добавление текста на элемент')
     def add_text_to_element(self, locator, text):
@@ -73,6 +92,7 @@ class BasePage:
     @allure.step('ожидание элемента по условию')
     def wait_until_condition(self, element_locator, expected_text, is_param):
         if is_param == 0:
+            self.wait_to_element(element_locator, expected_text)
             self.wait.until(
                 expected_conditions.text_to_be_present_in_element(element_locator, expected_text)
             )
@@ -80,15 +100,6 @@ class BasePage:
             self.wait.until_not(
                 expected_conditions.text_to_be_present_in_element(element_locator, expected_text)
             )
-
-    @allure.step('клик по локатору кнопки для Firefox')
-    def click_on_element_for_firefox(self, locator):
-        element = self.find_element_with_wait(locator)
-        ActionChains(self.driver).move_to_element(element).click().perform()
-
-    @allure.step('клик по web-элементу кнопки для Firefox')
-    def click_on_web_element_for_firefox(self, element):
-        ActionChains(self.driver).move_to_element(element).click().perform()
 
     @allure.step('прокрутка элемента')
     def scroll_try_to_element(self, locator):
@@ -112,55 +123,6 @@ class BasePage:
         self.add_text_to_web_element(element_email_password[1], password)
         self.click_to_element_locator(MainPageLocators.login_button)
         return email, password
-
-    @allure.step('создание пользователя с использованием API')
-    def create_user(self, name=None, email=None, password=None, is_param=0):
-        if is_param == 0:
-            if not name: name = fake.user_name()
-            if not email: email = fake.email()
-            if not password: password = fake.password()
-        elif is_param == 1:
-            name = None
-            if not email: email = fake.email()
-            if not password: password = fake.password()
-        elif is_param == 2:
-            if not name: name = fake.user_name()
-            email = None
-            if not password: password = fake.password()
-        elif is_param == 3:
-            if not name: name = fake.user_name()
-            if not email: email = fake.email()
-            password = None
-        data_param = {
-            "email": email,
-            "password": password,
-            "name": name
-        }
-        responce = requests.post(f'{data.BASE_URL}{data.USER_CREATE_URL}', data=data_param)
-        try:
-            return responce.status_code, responce.json(), [email, password, name]
-        except Exception:
-            return responce.status_code, responce.text, [email, password, name]
-
-    @allure.step('удаление пользователя')
-    def delete_user(self, email=None, password=None):
-        responce = self.login_user(email, password)
-        p_accesstoken = responce[1]["accessToken"]
-        responce = requests.delete(f'{data.BASE_URL}{data.USER_DELETE_URL}', headers={'Authorization': p_accesstoken})
-        return responce
-
-    @allure.step('логин пользователя')
-    def login_user(self, email=None, password=None):
-        data_param = {
-            "email": email,
-            "password": password
-        }
-
-        responce = requests.post(f'{data.BASE_URL}{data.USER_LOGIN_URL}', data=data_param)
-        try:
-            return responce.status_code, responce.json(), email, password
-        except Exception:
-            return responce.status_code, responce.text, email, password
 
     @allure.step('перетаскивание элемента')
     def drag_and_drop_element(self, locator_from, locator_to):
@@ -203,13 +165,17 @@ class BasePage:
 
         order_number = self.get_text_from_element(OrderPageLocators.order_number)
 
-        order_form_close_button = self.find_element_with_wait(OrderPageLocators.order_form_close_button)
+        self.wait_element_to_clickable(OrderPageLocators.order_form_close_button)
 
         if data.DRIVER_NAME == 'chrome':
-            # chrome
-            self.click_to_element(order_form_close_button)
+            self.click_to_element_locator(OrderPageLocators.order_form_close_button)
         else:
-            # firefox
-            self.click_on_web_element_for_firefox(order_form_close_button)
+            self.scroll_try_to_element(OrderPageLocators.order_form_close_button)
+            self.click_to_element_locator(OrderPageLocators.order_form_close_button)
 
         return order_number
+
+    @allure.step('клик на кнопку Личный кабинет')
+    def click_private_office(self):
+        personal_account_button = self.find_element_with_wait_clickable(AccountPageLocators.personal_account)
+        self.click_to_element(personal_account_button)

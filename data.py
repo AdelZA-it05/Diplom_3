@@ -31,3 +31,5 @@ RECOVERY_PASSWORD = 'Восстановление пароля'
 
 TEXT_BEFORE_LOGIN = 'Войти в аккаунт'
 TEXT_AFTER_LOGIN = 'Оформить заказ'
+
+MSG_DETAIL_ORDER = 'Cостав'

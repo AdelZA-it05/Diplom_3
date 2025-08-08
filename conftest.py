@@ -1,7 +1,7 @@
 from selenium import webdriver
 import pytest
 
-from pages.base_page import BasePage
+from api_helpers import ApiMethods
 import data
 
 
@@ -20,7 +20,7 @@ def driver(request):
 
 @pytest.fixture()
 def user():
-    basepage = BasePage(driver)
-    responce = basepage.create_user()
+    apimethods = ApiMethods()
+    responce = apimethods.create_user()
     yield responce
-    basepage.delete_user(responce[2][0], responce[2][1])
+    apimethods.delete_user(responce[2][0], responce[2][1])
