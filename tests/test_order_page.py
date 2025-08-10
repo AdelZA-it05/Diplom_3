@@ -4,12 +4,13 @@ fake = Faker("ru_RU")
 
 import data
 from pages.order_page import OrderPage
-from locators.order_page_locators import OrderPageLocators
-from locators.main_page_locators import MainPageLocators
 
 
 class TestOrderPage():
 
+    @allure.title('создание заказа')
+    @allure.description('Проверка создания заказа')
+    @allure.testcase('Дополнительный тест-кейс Diplom_3')
     def test_create_order(self, user, driver):
         testcounterontime = OrderPage(driver)
         testcounterontime.go_to_url(data.WEB_LINK)
@@ -60,20 +61,17 @@ class TestOrderPage():
         testcounterontime = OrderPage(driver)
         testcounterontime.go_to_url(data.WEB_LINK)
 
-        testcounterontime.click_to_element_locator(MainPageLocators.orders_feed_button)
+        testcounterontime.click_orders_feed()
 
-        caunter_list = testcounterontime.find_elements_with_wait(OrderPageLocators.order_counter_list)
-        caunter_all_before = caunter_list[0].text
-        counter_today_before = caunter_list[1].text
+        caunter_all_before = testcounterontime.get_counter_value()[0]
+        counter_today_before = testcounterontime.get_counter_value()[1]
 
         order_number = testcounterontime.create_order()
 
-        testcounterontime.click_to_element_locator(MainPageLocators.orders_feed_button)
+        testcounterontime.click_orders_feed()
 
-
-        caunter_list = testcounterontime.find_elements_with_wait(OrderPageLocators.order_counter_list)
-        caunter_all_after = caunter_list[0].text
-        counter_today_after = caunter_list[1].text
+        caunter_all_after = testcounterontime.get_counter_value()[0]
+        counter_today_after = testcounterontime.get_counter_value()[1]
 
         assert counter_today_before < counter_today_after and caunter_all_before < caunter_all_after
 
@@ -95,6 +93,18 @@ class TestOrderPage():
         list_order_inprogress_after = testdisplayinprogress.get_listinprogress_orders_feed()
 
         assert (order_number not in list_order_inprogress_before and order_number not in list_order_inprogress_after)
+
+    @allure.title('переход по клику на «Лента заказов»')
+    @allure.description('Проверка перехода в на ленту заказов по клику на кнопку лента заказов')
+    @allure.testcase('Тест-кейс из Дипломного задания Diplom_3')
+    def test_on_order_feed(self, driver):
+        testorderfeed = OrderPage(driver)
+        testorderfeed.go_to_url(data.WEB_LINK)
+
+        testorderfeed.click_orders_feed()
+
+        assert testorderfeed.get_text_on_form_orders_feed()  == data.ORDER_FEED_INFO
+
 
 
 

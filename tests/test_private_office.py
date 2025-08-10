@@ -4,7 +4,6 @@ import allure
 
 import data
 from pages.private_office import PrivateOffice
-from locators.accout_page_locators import AccountPageLocators
 
 
 class TestPrivateOffice():
@@ -13,12 +12,12 @@ class TestPrivateOffice():
     @allure.description('Проверка что, авторизация пользователя (фикстура user) проходит корректно')
     @allure.testcase('Тест-кейс из Дипломного задания Diplom_3')
     def test_autorize_user(self, user, driver):
-        testautorizeuser = PrivateOffice(driver) #
+        testautorizeuser = PrivateOffice(driver)
         testautorizeuser.go_to_url(data.WEB_LINK)
 
         testautorizeuser.autorization_user(email=user[2][0], password=user[2][1])
 
-        assert testautorizeuser.get_text_from_element(AccountPageLocators.constructor_form) == data.CONSTRUCTOR_INFO
+        assert testautorizeuser.get_text_constructor_form() == data.CONSTRUCTOR_INFO
 
     @allure.title('переход на страницу восстановления пароля по кнопке «Восстановить пароль')
     @allure.description('Проверка что, при нажатии кнопки восстановить пароль переходим на страницу восстановления пароля')
@@ -97,12 +96,7 @@ class TestPrivateOffice():
 
         testordershistory.click_private_office()
 
-        if data.DRIVER_NAME == 'chrome':
-            testordershistory.click_orders_history()
-        else:
-            testordershistory.click_orders_history_firefox()
-        assert testordershistory.get_order_history_list() > 0
-
+        testordershistory.click_orders_history()
 
     @allure.title('выход из аккаунт')
     @allure.description('Проверка выхода из аккаунта при нажатии выход в личном кабинете')

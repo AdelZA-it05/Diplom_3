@@ -19,17 +19,6 @@ class TestMainPage():
 
         assert testclickonconstructor.get_text_on_form_constructor() == data.CONSTRUCTOR_INFO
 
-    @allure.title('переход по клику на «Лента заказов»')
-    @allure.description('Проверка перехода в на ленту заказов по клику на кнопку лента заказов')
-    @allure.testcase('Тест-кейс из Дипломного задания Diplom_3')
-    def test_on_order_feed(self, driver):
-        testorderfeed = MainPage(driver)
-        testorderfeed.go_to_url(data.WEB_LINK)
-
-        testorderfeed.click_orders_feed()
-
-        assert testorderfeed.get_text_on_form_orders_feed()  == data.ORDER_FEED_INFO
-
     @allure.title('если кликнуть на ингредиент, появится всплывающее окно с деталями')
     @allure.description('Проверка отображения информации об ингридиенте')
     @allure.testcase('Тест-кейс из Дипломного задания Diplom_3')

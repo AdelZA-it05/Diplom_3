@@ -13,3 +13,6 @@ class OrderPageLocators:
     orders_history_list_number = By.XPATH, "//p[@class[contains(.,'text text_type_digits-default')]]"  # список номеров заказов
     order_counter_list = By.XPATH, "//p[@class[contains(.,'OrderFeed_number__2MbrQ text text_type_digits-large')]]" # каунтер заказов
     order_inprogress_list = By.XPATH, "//li[@class[contains(.,'text text_type_main-small')]]" # в работе
+
+    orders_feed_button = By.XPATH, "//p[text()='Лента Заказов']"  # кнопка лента заказов
+    orders_feed_form = By.XPATH, "//h1[text()='Лента заказов']"  # форма лента заказов

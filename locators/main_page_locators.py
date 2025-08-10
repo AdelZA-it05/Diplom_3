@@ -12,9 +12,6 @@ class MainPageLocators:
     login_account = By.XPATH, "//button[text()='Войти в аккаунт']"  # формить заказ
     place_order = By.XPATH, "//button[text()='Оформить заказ']"  # формить заказ
 
-    orders_feed_button = By.XPATH, "//p[text()='Лента Заказов']"  # кнопка лента заказов
-    orders_feed_form = By.XPATH, "//h1[text()='Лента заказов']"  # форма лента заказов
-
     ingredients_buns = By.XPATH, "//div[@class[contains(.,'tab_tab__1SPyG')]]"  # вкладка булки
     ingredients_list = By.XPATH, "//a[@class[contains(.,'BurgerIngredient_ingredient__1TVf6')]]"  # список булок
     ingredients_info = By.XPATH, "//h2[text()='Детали ингредиента']"  # детали ингредиента

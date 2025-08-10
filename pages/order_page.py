@@ -4,7 +4,6 @@ import data
 
 from pages.base_page import BasePage
 from locators.order_page_locators import OrderPageLocators
-from locators.main_page_locators import MainPageLocators
 
 class OrderPage(BasePage):
 
@@ -36,10 +35,10 @@ class OrderPage(BasePage):
     @allure.step('клик на кнопку Лента заказов')
     def click_button_orders_feed(self):
         if data.DRIVER_NAME == 'chrome':
-            self.click_to_element_locator(MainPageLocators.orders_feed_button)
+            self.click_to_element_locator(OrderPageLocators.orders_feed_button)
         else:
-            self.scroll_try_to_element(MainPageLocators.orders_feed_button)
-            self.click_on_element_for_firefox(MainPageLocators.orders_feed_button)
+            self.scroll_try_to_element(OrderPageLocators.orders_feed_button)
+            self.click_on_element_for_firefox(OrderPageLocators.orders_feed_button)
 
     @allure.step('получение списка историй заказа')
     def get_list_orders_feed(self):
@@ -56,6 +55,21 @@ class OrderPage(BasePage):
     @allure.step('клик по ленте заявок')
     def click_inprogress_orders_feed(self):
         if data.DRIVER_NAME == 'chrome':
-            self.click_to_element_locator(MainPageLocators.orders_feed_button)
+            self.click_to_element_locator(OrderPageLocators.orders_feed_button)
         else:
-            self.click_on_element_for_firefox(MainPageLocators.orders_feed_button)
+            self.click_on_element_for_firefox(OrderPageLocators.orders_feed_button)
+
+    @allure.step('Полученипе счётчиков заявок')
+    def get_counter_value(self):
+        caunter_list = self.find_elements_with_wait(OrderPageLocators.order_counter_list)
+        return caunter_list[0].text, caunter_list[1].text
+
+    @allure.step('клик на кнопку Лента заказов')
+    def click_orders_feed(self):
+        orders_feed = self.find_element_with_wait(OrderPageLocators.orders_feed_button)
+        self.wait_element_to_clickable(orders_feed)
+        self.click_to_element(orders_feed)
+
+    @allure.step('получение текста на форме Лента заказов')
+    def get_text_on_form_orders_feed(self):
+        return self.get_text_from_element(OrderPageLocators.order_feed_form)

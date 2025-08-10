@@ -17,16 +17,6 @@ class MainPage(BasePage):
     def get_text_on_form_constructor(self):
         return self.get_text_from_element(MainPageLocators.constructor_form)
 
-    @allure.step('клик на кнопку Лента заказов')
-    def click_orders_feed(self):
-        orders_feed = self.find_element_with_wait(MainPageLocators.orders_feed_button)
-        self.wait_element_to_clickable(orders_feed)
-        self.click_to_element(orders_feed)
-
-    @allure.step('получение текста на форме Лента заказов')
-    def get_text_on_form_orders_feed(self):
-        return self.get_text_from_element(MainPageLocators.orders_feed_form)
-
     @allure.step('клик на список ингридиентов')
     def click_ingredients_list(self):
         ingredients_title = self.find_elements_with_wait(MainPageLocators.ingredients_buns)
