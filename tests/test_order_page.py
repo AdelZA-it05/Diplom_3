@@ -18,7 +18,7 @@ class TestOrderPage():
         order_number = testcounterontime.create_order()
 
 
-        assert 1 == 1
+        assert order_number != '9999'
 
     @allure.title('если кликнуть на заказ, откроется всплывающее окно с деталями')
     @allure.description('Проверка отображения информвции о заказе')
